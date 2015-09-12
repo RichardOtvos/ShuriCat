@@ -1,0 +1,27 @@
+{
+  "name": "NinjaRain",
+  "version": "0.0.1",
+  "description": "A simple platform game created with Phaser",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "game",
+    "Phaser",
+    "ninja"
+  ],
+  "author": "Richard Otvos, Dora Szilagyi",
+  "license": "MIT",
+  "devDependencies": {
+    "babel": "^5.8.23",
+    "babelify": "^6.3.0",
+    "browserify": "^11.1.0",
+    "gulp": "^3.9.0",
+    "gulp-babel": "^5.2.1",
+    "gulp-concat": "^2.6.0",
+    "gulp-sourcemaps": "^1.5.2",
+    "vinyl-source-stream": "^1.1.0",
+    "vinyl-transform": "^1.0.0"
+  }
+}
