@@ -3,7 +3,7 @@ import {MainMenu} from "./states/MainMenu";
 
 export class NinjaRain extends Phaser.Game{
     constructor() {
-        super(800, 600, Phaser.AUTO, 'game-content');
+        super(1024, 600, Phaser.AUTO, 'game-content');
 
         var startingStateName = "Loading";  //get this from config? (modules?)
 

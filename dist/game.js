@@ -76,7 +76,7 @@
 	        function NinjaRain() {
 	                _classCallCheck(this, NinjaRain);
 	
-	                _get(Object.getPrototypeOf(NinjaRain.prototype), "constructor", this).call(this, 800, 600, Phaser.AUTO, 'game-content');
+	                _get(Object.getPrototypeOf(NinjaRain.prototype), "constructor", this).call(this, 1024, 600, Phaser.AUTO, 'game-content');
 	
 	                var startingStateName = "Loading"; //get this from config? (modules?)
 	
@@ -529,13 +529,18 @@
 	
 	            //Load images
 	            this.game.load.image("naruto-logo", "assets/narutoLogo.png");
+	            this.game.load.image("ninja", "assets/ninja.png");
 	        }
 	    }, {
 	        key: "create",
 	        value: function create() {
+	            //enable physics
+	            this.game.physics.startSystem(Phaser.Physics.ARCADE);
+	            this.game.physics.arcade.gravity.y = 600;
+	
 	            //add loaded stuff to game
 	            this.world.add(this.loadingText);
-	            this.time.events.add(Phaser.Timer.SECOND * 2, function () {
+	            this.time.events.add(Phaser.Timer.SECOND * 1, function () {
 	                this.state.start("MainMenu");
 	            }, this);
 	        }
@@ -608,6 +613,8 @@
 	    value: true
 	});
 	
+	var _objectsNinja = __webpack_require__(33);
+	
 	var MainMenu = (function (_Phaser$State) {
 	    _inherits(MainMenu, _Phaser$State);
 	
@@ -631,6 +638,7 @@
 	            this.game.stage.backgroundColor = "#112D5B";
 	            this.menuText = this.make.text(this.world.centerX, 50, menuText, menuTextStyle);
 	            this.menuText.anchor.set(0.5, 0); //we want our text centered
+	            this.ninja = new _objectsNinja.Ninja(this.game, 10, 10, 'ninja');
 	        }
 	    }, {
 	        key: "create",
@@ -638,6 +646,7 @@
 	            //add loaded stuff to game
 	            this.world.add(this.menuText);
 	            this.add.image(this.world.centerX, 250, 'naruto-logo').anchor.set(0.5, 0);
+	            this.world.add(this.ninja);
 	        }
 	    }]);
 	
@@ -645,6 +654,42 @@
 	})(Phaser.State);
 	
 	exports.MainMenu = MainMenu;
+
+/***/ },
+/* 33 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	var _get = __webpack_require__(2)["default"];
+	
+	var _inherits = __webpack_require__(16)["default"];
+	
+	var _classCallCheck = __webpack_require__(27)["default"];
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var Ninja = (function (_Phaser$Sprite) {
+	    _inherits(Ninja, _Phaser$Sprite);
+	
+	    function Ninja(game, x, y, key, frame) {
+	        _classCallCheck(this, Ninja);
+	
+	        _get(Object.getPrototypeOf(Ninja.prototype), "constructor", this).call(this, game, x, y, key, frame);
+	
+	        this.game.physics.arcade.enableBody(this);
+	        this.body.collideWorldBounds = true;
+	
+	        //bouncy ninja is bouncy
+	        this.body.bounce.y = 0.6;
+	    }
+	
+	    return Ninja;
+	})(Phaser.Sprite);
+	
+	exports.Ninja = Ninja;
 
 /***/ }
 /******/ ]);

@@ -1,3 +1,5 @@
+import {Ninja} from "./../objects/Ninja";
+
 export class MainMenu extends Phaser.State{
     preload(){
         let menuText = "Menu";
@@ -11,11 +13,13 @@ export class MainMenu extends Phaser.State{
         this.game.stage.backgroundColor = "#112D5B";
         this.menuText = this.make.text(this.world.centerX, 50, menuText, menuTextStyle);
         this.menuText.anchor.set(0.5, 0); //we want our text centered
+        this.ninja = new Ninja(this.game, 10, 10, 'ninja');
     }
 
     create(){
         //add loaded stuff to game
         this.world.add(this.menuText);
         this.add.image(this.world.centerX, 250, 'naruto-logo').anchor.set(0.5, 0);
+        this.world.add(this.ninja);
     }
 }

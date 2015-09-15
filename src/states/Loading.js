@@ -14,12 +14,17 @@ export class Loading extends Phaser.State {
 
         //Load images
         this.game.load.image("naruto-logo", "assets/narutoLogo.png");
+        this.game.load.image("ninja", "assets/ninja.png");
     }
 
     create() {
+        //enable physics
+        this.game.physics.startSystem(Phaser.Physics.ARCADE);
+        this.game.physics.arcade.gravity.y = 600;
+
         //add loaded stuff to game
         this.world.add(this.loadingText);
-        this.time.events.add(Phaser.Timer.SECOND * 2, function(){
+        this.time.events.add(Phaser.Timer.SECOND * 1, function(){
             this.state.start("MainMenu");
         }, this);
     }
