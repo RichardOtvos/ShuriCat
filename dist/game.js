@@ -86,6 +86,9 @@
 	
 	                //starts the game with the starting state
 	                this.state.start(startingStateName);
+	
+	                //enable physics
+	                this.physics.startSystem(Phaser.Physics.ARCADE);
 	        }
 	
 	        return NinjaRain;
@@ -530,13 +533,15 @@
 	            //Load images
 	            this.game.load.image("naruto-logo", "assets/narutoLogo.png");
 	            this.game.load.image("ninja", "assets/ninja.png");
+	            this.game.load.image("sky", "assets/sky.jpg");
+	            this.game.load.image("ground", "assets/ground.jpg");
 	        }
 	    }, {
 	        key: "create",
 	        value: function create() {
 	            //enable physics
 	            this.game.physics.startSystem(Phaser.Physics.ARCADE);
-	            this.game.physics.arcade.gravity.y = 600;
+	            this.game.physics.arcade.gravity.y = 900;
 	
 	            //add loaded stuff to game
 	            this.world.add(this.loadingText);
@@ -615,6 +620,8 @@
 	
 	var _objectsNinja = __webpack_require__(33);
 	
+	var _objectsGround = __webpack_require__(34);
+	
 	var MainMenu = (function (_Phaser$State) {
 	    _inherits(MainMenu, _Phaser$State);
 	
@@ -627,7 +634,7 @@
 	    _createClass(MainMenu, [{
 	        key: "preload",
 	        value: function preload() {
-	            var menuText = "Menu";
+	            var menuText = "Ninja Rain";
 	            var menuTextStyle = {
 	                font: "65px Arial",
 	                fontWeight: "bold",
@@ -635,18 +642,26 @@
 	                align: "center"
 	            };
 	
-	            this.game.stage.backgroundColor = "#112D5B";
 	            this.menuText = this.make.text(this.world.centerX, 50, menuText, menuTextStyle);
 	            this.menuText.anchor.set(0.5, 0); //we want our text centered
 	            this.ninja = new _objectsNinja.Ninja(this.game, 10, 10, 'ninja');
+	            this.ground = new _objectsGround.Ground(this.game, 0, this.game.world.height - 30, 'ground');
 	        }
 	    }, {
 	        key: "create",
 	        value: function create() {
+	            //add background -later refactor to somewhere else
+	            this.add.image(0, 0, 'sky');
+	
 	            //add loaded stuff to game
 	            this.world.add(this.menuText);
-	            this.add.image(this.world.centerX, 250, 'naruto-logo').anchor.set(0.5, 0);
 	            this.world.add(this.ninja);
+	            this.world.add(this.ground);
+	        }
+	    }, {
+	        key: "update",
+	        value: function update() {
+	            this.game.physics.arcade.collide(this.ninja, this.ground);
 	        }
 	    }]);
 	
@@ -665,6 +680,8 @@
 	
 	var _inherits = __webpack_require__(16)["default"];
 	
+	var _createClass = __webpack_require__(29)["default"];
+	
 	var _classCallCheck = __webpack_require__(27)["default"];
 	
 	Object.defineProperty(exports, "__esModule", {
@@ -679,17 +696,108 @@
 	
 	        _get(Object.getPrototypeOf(Ninja.prototype), "constructor", this).call(this, game, x, y, key, frame);
 	
-	        this.game.physics.arcade.enableBody(this);
-	        this.body.collideWorldBounds = true;
+	        //add properties
+	        this.data = {
+	            speedX: 500,
+	            speedY: 650
+	            //bounceY: 0.4
+	        };
+	
+	        //init stuff
+	        this.initPhysics();
+	        this.initControls();
 	
 	        //bouncy ninja is bouncy
-	        this.body.bounce.y = 0.6;
+	        //this.body.bounce.y = this.data.bounceY;
 	    }
+	
+	    _createClass(Ninja, [{
+	        key: "initPhysics",
+	        value: function initPhysics() {
+	            this.game.physics.arcade.enableBody(this);
+	            this.body.collideWorldBounds = true;
+	        }
+	    }, {
+	        key: "initControls",
+	        value: function initControls() {
+	            var cursors = this.game.input.keyboard.createCursorKeys();
+	
+	            this.data.controls = {
+	                cursors: cursors
+	            };
+	        }
+	
+	        //this method is called by Phaser
+	    }, {
+	        key: "update",
+	        value: function update() {
+	            this.moveNinja();
+	        }
+	    }, {
+	        key: "moveNinja",
+	        value: function moveNinja() {
+	            this.body.velocity.x = 0;
+	            if (this.body.velocity.y > 0) {}
+	
+	            if (this.data.controls.cursors.right.isDown) {
+	                this.body.velocity.x = this.data.speedX;
+	            } else if (this.data.controls.cursors.left.isDown) {
+	                this.body.velocity.x = -this.data.speedX;
+	            }
+	
+	            if (this.data.controls.cursors.up.isDown && this.body.touching.down) {
+	                this.body.velocity.y = -this.data.speedY;
+	            }
+	        }
+	    }]);
 	
 	    return Ninja;
 	})(Phaser.Sprite);
 	
 	exports.Ninja = Ninja;
+
+/***/ },
+/* 34 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	var _get = __webpack_require__(2)["default"];
+	
+	var _inherits = __webpack_require__(16)["default"];
+	
+	var _createClass = __webpack_require__(29)["default"];
+	
+	var _classCallCheck = __webpack_require__(27)["default"];
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var Ground = (function (_Phaser$Sprite) {
+	    _inherits(Ground, _Phaser$Sprite);
+	
+	    function Ground(game, x, y, key) {
+	        _classCallCheck(this, Ground);
+	
+	        _get(Object.getPrototypeOf(Ground.prototype), "constructor", this).call(this, game, x, y, key);
+	
+	        this.initPhysics();
+	    }
+	
+	    _createClass(Ground, [{
+	        key: "initPhysics",
+	        value: function initPhysics() {
+	            this.game.physics.arcade.enableBody(this);
+	            this.body.collideWorldBounds = true;
+	            this.body.immovable = true;
+	        }
+	    }]);
+	
+	    return Ground;
+	})(Phaser.Sprite);
+	
+	exports.Ground = Ground;
 
 /***/ }
 /******/ ]);
