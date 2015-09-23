@@ -13,10 +13,13 @@ export class Loading extends Phaser.State {
         this.loadingText.anchor.set(0.5); //we want our text centered
 
         //Load images
-        this.game.load.image("naruto-logo", "assets/narutoLogo.png");
-        this.game.load.image("ninja", "assets/ninja.png");
         this.game.load.image("sky", "assets/sky.jpg");
         this.game.load.image("ground", "assets/ground.jpg");
+        this.game.load.image("shuriken", "assets/shuriken.png");
+        this.game.load.spritesheet("ninja", "assets/macs_sprite.png", 110, 71);
+
+        //refactor these to audio sprites
+        this.game.load.audio("boing", "assets/boing.ogg");
     }
 
     create() {
@@ -26,8 +29,6 @@ export class Loading extends Phaser.State {
 
         //add loaded stuff to game
         this.world.add(this.loadingText);
-        this.time.events.add(Phaser.Timer.SECOND * 1, function(){
-            this.state.start("MainMenu");
-        }, this);
+        this.state.start("MainMenu");
     }
 }

@@ -1,5 +1,7 @@
 import {Loading} from "./states/Loading";
 import {MainMenu} from "./states/MainMenu";
+import {InGame} from "./states/InGame";
+import {GameOver} from "./states/GameOver";
 
 export class NinjaRain extends Phaser.Game{
     constructor() {
@@ -10,6 +12,8 @@ export class NinjaRain extends Phaser.Game{
         //add states here
         this.state.add("Loading", Loading);
         this.state.add("MainMenu", MainMenu);
+        this.state.add("InGame", InGame);
+        this.state.add("GameOver", GameOver);
 
         //starts the game with the starting state
         this.state.start(startingStateName);

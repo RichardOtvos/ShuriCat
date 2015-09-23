@@ -70,6 +70,10 @@
 	
 	var _statesMainMenu = __webpack_require__(32);
 	
+	var _statesInGame = __webpack_require__(34);
+	
+	var _statesGameOver = __webpack_require__(44);
+	
 	var NinjaRain = (function (_Phaser$Game) {
 	        _inherits(NinjaRain, _Phaser$Game);
 	
@@ -83,6 +87,8 @@
 	                //add states here
 	                this.state.add("Loading", _statesLoading.Loading);
 	                this.state.add("MainMenu", _statesMainMenu.MainMenu);
+	                this.state.add("InGame", _statesInGame.InGame);
+	                this.state.add("GameOver", _statesGameOver.GameOver);
 	
 	                //starts the game with the starting state
 	                this.state.start(startingStateName);
@@ -531,10 +537,13 @@
 	            this.loadingText.anchor.set(0.5); //we want our text centered
 	
 	            //Load images
-	            this.game.load.image("naruto-logo", "assets/narutoLogo.png");
-	            this.game.load.image("ninja", "assets/ninja.png");
 	            this.game.load.image("sky", "assets/sky.jpg");
 	            this.game.load.image("ground", "assets/ground.jpg");
+	            this.game.load.image("shuriken", "assets/shuriken.png");
+	            this.game.load.spritesheet("ninja", "assets/macs_sprite.png", 110, 71);
+	
+	            //refactor these to audio sprites
+	            this.game.load.audio("boing", "assets/boing.ogg");
 	        }
 	    }, {
 	        key: "create",
@@ -545,9 +554,7 @@
 	
 	            //add loaded stuff to game
 	            this.world.add(this.loadingText);
-	            this.time.events.add(Phaser.Timer.SECOND * 1, function () {
-	                this.state.start("MainMenu");
-	            }, this);
+	            this.state.start("MainMenu");
 	        }
 	    }]);
 	
@@ -618,10 +625,6 @@
 	    value: true
 	});
 	
-	var _objectsNinja = __webpack_require__(33);
-	
-	var _objectsGround = __webpack_require__(34);
-	
 	var MainMenu = (function (_Phaser$State) {
 	    _inherits(MainMenu, _Phaser$State);
 	
@@ -634,18 +637,32 @@
 	    _createClass(MainMenu, [{
 	        key: "preload",
 	        value: function preload() {
-	            var menuText = "Ninja Rain";
+	            var menuText = "ShuriCat";
+	            var instructionText = "Dodge the shurikens!\nPress Enter to continue...";
 	            var menuTextStyle = {
 	                font: "65px Arial",
 	                fontWeight: "bold",
 	                fill: "#EFEFEF",
 	                align: "center"
 	            };
+	            var instructionTextStyle = {
+	                font: "32px Arial",
+	                fontWeight: "normal",
+	                fill: "#EFEFEF",
+	                align: "center"
+	            };
 	
 	            this.menuText = this.make.text(this.world.centerX, 50, menuText, menuTextStyle);
-	            this.menuText.anchor.set(0.5, 0); //we want our text centered
-	            this.ninja = new _objectsNinja.Ninja(this.game, 10, 10, 'ninja');
-	            this.ground = new _objectsGround.Ground(this.game, 0, this.game.world.height - 30, 'ground');
+	            this.instructionText = this.make.text(this.world.centerX, 200, instructionText, instructionTextStyle);
+	
+	            //we want our text centered
+	            this.menuText.anchor.set(0.5, 0);
+	            this.instructionText.anchor.set(0.5, 0);
+	
+	            //The continue key
+	            this.data = {
+	                continueKey: this.input.keyboard.addKey(Phaser.Keyboard.ENTER)
+	            };
 	        }
 	    }, {
 	        key: "create",
@@ -655,13 +672,14 @@
 	
 	            //add loaded stuff to game
 	            this.world.add(this.menuText);
-	            this.world.add(this.ninja);
-	            this.world.add(this.ground);
+	            this.world.add(this.instructionText);
 	        }
 	    }, {
 	        key: "update",
 	        value: function update() {
-	            this.game.physics.arcade.collide(this.ninja, this.ground);
+	            if (this.data.continueKey.isDown) {
+	                this.state.start("InGame");
+	            }
 	        }
 	    }]);
 	
@@ -672,92 +690,6 @@
 
 /***/ },
 /* 33 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	
-	var _get = __webpack_require__(2)["default"];
-	
-	var _inherits = __webpack_require__(16)["default"];
-	
-	var _createClass = __webpack_require__(29)["default"];
-	
-	var _classCallCheck = __webpack_require__(27)["default"];
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	
-	var Ninja = (function (_Phaser$Sprite) {
-	    _inherits(Ninja, _Phaser$Sprite);
-	
-	    function Ninja(game, x, y, key, frame) {
-	        _classCallCheck(this, Ninja);
-	
-	        _get(Object.getPrototypeOf(Ninja.prototype), "constructor", this).call(this, game, x, y, key, frame);
-	
-	        //add properties
-	        this.data = {
-	            speedX: 500,
-	            speedY: 650
-	            //bounceY: 0.4
-	        };
-	
-	        //init stuff
-	        this.initPhysics();
-	        this.initControls();
-	
-	        //bouncy ninja is bouncy
-	        //this.body.bounce.y = this.data.bounceY;
-	    }
-	
-	    _createClass(Ninja, [{
-	        key: "initPhysics",
-	        value: function initPhysics() {
-	            this.game.physics.arcade.enableBody(this);
-	            this.body.collideWorldBounds = true;
-	        }
-	    }, {
-	        key: "initControls",
-	        value: function initControls() {
-	            var cursors = this.game.input.keyboard.createCursorKeys();
-	
-	            this.data.controls = {
-	                cursors: cursors
-	            };
-	        }
-	
-	        //this method is called by Phaser
-	    }, {
-	        key: "update",
-	        value: function update() {
-	            this.moveNinja();
-	        }
-	    }, {
-	        key: "moveNinja",
-	        value: function moveNinja() {
-	            this.body.velocity.x = 0;
-	            if (this.body.velocity.y > 0) {}
-	
-	            if (this.data.controls.cursors.right.isDown) {
-	                this.body.velocity.x = this.data.speedX;
-	            } else if (this.data.controls.cursors.left.isDown) {
-	                this.body.velocity.x = -this.data.speedX;
-	            }
-	
-	            if (this.data.controls.cursors.up.isDown && this.body.touching.down) {
-	                this.body.velocity.y = -this.data.speedY;
-	            }
-	        }
-	    }]);
-	
-	    return Ninja;
-	})(Phaser.Sprite);
-	
-	exports.Ninja = Ninja;
-
-/***/ },
-/* 34 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -798,6 +730,386 @@
 	})(Phaser.Sprite);
 	
 	exports.Ground = Ground;
+
+/***/ },
+/* 34 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	var _get = __webpack_require__(2)["default"];
+	
+	var _inherits = __webpack_require__(16)["default"];
+	
+	var _createClass = __webpack_require__(29)["default"];
+	
+	var _classCallCheck = __webpack_require__(27)["default"];
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _objectsNinja = __webpack_require__(35);
+	
+	var _objectsGround = __webpack_require__(33);
+	
+	var _objectsShurikenGroup = __webpack_require__(36);
+	
+	var InGame = (function (_Phaser$State) {
+	    _inherits(InGame, _Phaser$State);
+	
+	    function InGame() {
+	        _classCallCheck(this, InGame);
+	
+	        _get(Object.getPrototypeOf(InGame.prototype), "constructor", this).apply(this, arguments);
+	    }
+	
+	    _createClass(InGame, [{
+	        key: "preload",
+	        value: function preload() {
+	            this.ninja = new _objectsNinja.Ninja(this.game, 10, this.game.world.height - 100, 'ninja', 4);
+	            this.ground = new _objectsGround.Ground(this.game, 0, this.game.world.height - 30, 'ground');
+	            this.shurikens = new _objectsShurikenGroup.ShurikenGroup(this.game);
+	        }
+	    }, {
+	        key: "create",
+	        value: function create() {
+	            //add background -later refactor to somewhere else
+	            this.add.image(0, 0, 'sky');
+	
+	            //add loaded stuff to game
+	            this.world.add(this.ground);
+	            this.world.add(this.ninja);
+	            this.world.add(this.shurikens);
+	        }
+	    }, {
+	        key: "update",
+	        value: function update() {
+	            this.game.physics.arcade.collide(this.ninja, this.ground);
+	            this.game.physics.arcade.collide(this.ninja, this.shurikens, this.onGameOver.bind(this));
+	        }
+	    }, {
+	        key: "render",
+	        value: function render() {
+	            this.game.debug.body(this.ninja);
+	        }
+	    }, {
+	        key: "onGameOver",
+	        value: function onGameOver() {
+	            this.state.start("GameOver");
+	        }
+	    }]);
+	
+	    return InGame;
+	})(Phaser.State);
+	
+	exports.InGame = InGame;
+
+/***/ },
+/* 35 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var _get = __webpack_require__(2)['default'];
+	
+	var _inherits = __webpack_require__(16)['default'];
+	
+	var _createClass = __webpack_require__(29)['default'];
+	
+	var _classCallCheck = __webpack_require__(27)['default'];
+	
+	Object.defineProperty(exports, '__esModule', {
+	    value: true
+	});
+	
+	var Ninja = (function (_Phaser$Sprite) {
+	    _inherits(Ninja, _Phaser$Sprite);
+	
+	    function Ninja(game, x, y, key, frame) {
+	        _classCallCheck(this, Ninja);
+	
+	        _get(Object.getPrototypeOf(Ninja.prototype), 'constructor', this).call(this, game, x, y, key, frame);
+	
+	        //add properties
+	        this.data = {
+	            speedX: 400,
+	            speedY: 650
+	        };
+	
+	        //init stuff
+	        this.initPhysics();
+	        this.initControls();
+	
+	        this.animations.add('left', [0, 1], 3, true);
+	        this.animations.add('right', [2, 3], 3, true);
+	        this.animations.add('die', [5, 6], 1, false);
+	        this.data.jumpSound = this.game.add.audio('boing');
+	    }
+	
+	    _createClass(Ninja, [{
+	        key: 'initPhysics',
+	        value: function initPhysics() {
+	            this.game.physics.arcade.enableBody(this);
+	            this.body.collideWorldBounds = true;
+	            this.body.setSize(60, this.height - 10);
+	        }
+	    }, {
+	        key: 'initControls',
+	        value: function initControls() {
+	            var cursors = this.game.input.keyboard.createCursorKeys();
+	
+	            this.data.controls = {
+	                cursors: cursors
+	            };
+	        }
+	
+	        //this method is called by Phaser
+	    }, {
+	        key: 'update',
+	        value: function update() {
+	            this.moveNinja();
+	        }
+	    }, {
+	        key: 'moveNinja',
+	        value: function moveNinja() {
+	            this.body.velocity.x = 0;
+	            if (this.body.velocity.y > 0) {}
+	
+	            if (this.data.controls.cursors.right.isDown) {
+	                this.body.velocity.x = this.data.speedX;
+	                this.animations.play('right');
+	            } else if (this.data.controls.cursors.left.isDown) {
+	                this.body.velocity.x = -this.data.speedX;
+	                this.animations.play('left');
+	            } else if (this.data.controls.cursors.down.isDown) {
+	                this.animations.play('die');
+	                this.frame = 6;
+	            } else {
+	                this.animations.stop();
+	                this.frame = 4;
+	            }
+	
+	            if (this.data.controls.cursors.up.isDown && this.body.touching.down) {
+	                this.body.velocity.y = -this.data.speedY;
+	                this.data.jumpSound.play();
+	            }
+	        }
+	    }]);
+	
+	    return Ninja;
+	})(Phaser.Sprite);
+	
+	exports.Ninja = Ninja;
+
+/***/ },
+/* 36 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	var _get = __webpack_require__(2)["default"];
+	
+	var _inherits = __webpack_require__(16)["default"];
+	
+	var _createClass = __webpack_require__(29)["default"];
+	
+	var _classCallCheck = __webpack_require__(27)["default"];
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _Shuriken = __webpack_require__(37);
+	
+	var ShurikenGroup = (function (_Phaser$Group) {
+	    _inherits(ShurikenGroup, _Phaser$Group);
+	
+	    function ShurikenGroup(game) {
+	        _classCallCheck(this, ShurikenGroup);
+	
+	        _get(Object.getPrototypeOf(ShurikenGroup.prototype), "constructor", this).call(this, game, null, "shurikenGroup");
+	
+	        this.data = {
+	            numberOfShurikens: 10
+	        };
+	        this.addShurikens(this.data.numberOfShurikens);
+	    }
+	
+	    _createClass(ShurikenGroup, [{
+	        key: "addShurikens",
+	        value: function addShurikens(amount) {
+	            for (var i = 0; i < amount; i++) {
+	                this.add(new _Shuriken.Shuriken(this.game));
+	            }
+	        }
+	    }]);
+	
+	    return ShurikenGroup;
+	})(Phaser.Group);
+	
+	exports.ShurikenGroup = ShurikenGroup;
+
+/***/ },
+/* 37 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var _get = __webpack_require__(2)['default'];
+	
+	var _inherits = __webpack_require__(16)['default'];
+	
+	var _createClass = __webpack_require__(29)['default'];
+	
+	var _classCallCheck = __webpack_require__(27)['default'];
+	
+	Object.defineProperty(exports, '__esModule', {
+	    value: true
+	});
+	
+	var Shuriken = (function (_Phaser$Sprite) {
+	    _inherits(Shuriken, _Phaser$Sprite);
+	
+	    function Shuriken(game) {
+	        _classCallCheck(this, Shuriken);
+	
+	        _get(Object.getPrototypeOf(Shuriken.prototype), 'constructor', this).call(this, game, 0, 1000, 'shuriken');
+	
+	        this.data = {
+	            speedY: 300,
+	            minSpeed: 200,
+	            maxSpeed: 300
+	        };
+	
+	        this.initPhysics();
+	        this.setRandomStartingPosition();
+	        this.setRandomSpeed();
+	    }
+	
+	    _createClass(Shuriken, [{
+	        key: 'initPhysics',
+	        value: function initPhysics() {
+	            this.game.physics.arcade.enableBody(this);
+	            this.body.collideWorldBounds = false;
+	        }
+	    }, {
+	        key: 'update',
+	        value: function update() {
+	            this.moveShuriken();
+	        }
+	    }, {
+	        key: 'moveShuriken',
+	        value: function moveShuriken() {
+	            if (this.body.y > this.game.world.height + this.height) {
+	                this.setRandomStartingPosition();
+	                this.setRandomSpeed();
+	            }
+	            this.body.velocity.y = this.data.speedY;
+	        }
+	    }, {
+	        key: 'setRandomSpeed',
+	        value: function setRandomSpeed() {
+	            this.data.speedY = this.game.rnd.between(this.data.minSpeed, this.data.maxSpeed);
+	        }
+	    }, {
+	        key: 'setRandomStartingPosition',
+	        value: function setRandomStartingPosition() {
+	            this.body.y = this.game.rnd.between(-this.height, -this.height - 200);
+	            this.body.x = this.game.rnd.between(0, this.game.world.width - this.width);
+	        }
+	    }]);
+	
+	    return Shuriken;
+	})(Phaser.Sprite);
+	
+	exports.Shuriken = Shuriken;
+
+/***/ },
+/* 38 */,
+/* 39 */,
+/* 40 */,
+/* 41 */,
+/* 42 */,
+/* 43 */,
+/* 44 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	var _get = __webpack_require__(2)["default"];
+	
+	var _inherits = __webpack_require__(16)["default"];
+	
+	var _createClass = __webpack_require__(29)["default"];
+	
+	var _classCallCheck = __webpack_require__(27)["default"];
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var GameOver = (function (_Phaser$State) {
+	    _inherits(GameOver, _Phaser$State);
+	
+	    function GameOver() {
+	        _classCallCheck(this, GameOver);
+	
+	        _get(Object.getPrototypeOf(GameOver.prototype), "constructor", this).apply(this, arguments);
+	    }
+	
+	    _createClass(GameOver, [{
+	        key: "preload",
+	        value: function preload() {
+	            var gameOverText = "Game Over";
+	            var instructionText = "Press Enter to restart...";
+	            var gameOverTextStyle = {
+	                font: "65px Arial",
+	                fontWeight: "bold",
+	                fill: "#EFEFEF",
+	                align: "center"
+	            };
+	            var instructionTextStyle = {
+	                font: "32px Arial",
+	                fontWeight: "normal",
+	                fill: "#EFEFEF",
+	                align: "center"
+	            };
+	
+	            this.gameOverText = this.make.text(this.world.centerX, 50, gameOverText, gameOverTextStyle);
+	            this.instructionText = this.make.text(this.world.centerX, 200, instructionText, instructionTextStyle);
+	
+	            //we want our text centered
+	            this.gameOverText.anchor.set(0.5, 0);
+	            this.instructionText.anchor.set(0.5, 0);
+	
+	            //The continue key
+	            this.data = {
+	                continueKey: this.input.keyboard.addKey(Phaser.Keyboard.ENTER)
+	            };
+	        }
+	    }, {
+	        key: "create",
+	        value: function create() {
+	            this.stage.setBackgroundColor("#000000");
+	
+	            //add loaded stuff to game
+	            this.world.add(this.gameOverText);
+	            this.world.add(this.instructionText);
+	        }
+	    }, {
+	        key: "update",
+	        value: function update() {
+	            if (this.data.continueKey.isDown) {
+	                this.state.start("InGame");
+	            }
+	        }
+	    }]);
+	
+	    return GameOver;
+	})(Phaser.State);
+	
+	exports.GameOver = GameOver;
 
 /***/ }
 /******/ ]);
