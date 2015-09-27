@@ -17,8 +17,5 @@ export class NinjaRain extends Phaser.Game{
 
         //starts the game with the starting state
         this.state.start(startingStateName);
-
-        //enable physics
-        this.physics.startSystem(Phaser.Physics.ARCADE);
     }
 }
