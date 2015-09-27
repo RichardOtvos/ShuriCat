@@ -25,7 +25,6 @@ export class InGame extends Phaser.State{
     }
 
     render(){
-        this.game.debug.body(this.ninja);
     }
 
     onGameOver(){

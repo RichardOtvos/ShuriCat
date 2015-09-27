@@ -70,9 +70,9 @@
 	
 	var _statesMainMenu = __webpack_require__(32);
 	
-	var _statesInGame = __webpack_require__(34);
+	var _statesInGame = __webpack_require__(33);
 	
-	var _statesGameOver = __webpack_require__(44);
+	var _statesGameOver = __webpack_require__(38);
 	
 	var NinjaRain = (function (_Phaser$Game) {
 	        _inherits(NinjaRain, _Phaser$Game);
@@ -92,9 +92,6 @@
 	
 	                //starts the game with the starting state
 	                this.state.start(startingStateName);
-	
-	                //enable physics
-	                this.physics.startSystem(Phaser.Physics.ARCADE);
 	        }
 	
 	        return NinjaRain;
@@ -706,52 +703,9 @@
 	    value: true
 	});
 	
-	var Ground = (function (_Phaser$Sprite) {
-	    _inherits(Ground, _Phaser$Sprite);
+	var _objectsNinja = __webpack_require__(34);
 	
-	    function Ground(game, x, y, key) {
-	        _classCallCheck(this, Ground);
-	
-	        _get(Object.getPrototypeOf(Ground.prototype), "constructor", this).call(this, game, x, y, key);
-	
-	        this.initPhysics();
-	    }
-	
-	    _createClass(Ground, [{
-	        key: "initPhysics",
-	        value: function initPhysics() {
-	            this.game.physics.arcade.enableBody(this);
-	            this.body.collideWorldBounds = true;
-	            this.body.immovable = true;
-	        }
-	    }]);
-	
-	    return Ground;
-	})(Phaser.Sprite);
-	
-	exports.Ground = Ground;
-
-/***/ },
-/* 34 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	
-	var _get = __webpack_require__(2)["default"];
-	
-	var _inherits = __webpack_require__(16)["default"];
-	
-	var _createClass = __webpack_require__(29)["default"];
-	
-	var _classCallCheck = __webpack_require__(27)["default"];
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	
-	var _objectsNinja = __webpack_require__(35);
-	
-	var _objectsGround = __webpack_require__(33);
+	var _objectsGround = __webpack_require__(35);
 	
 	var _objectsShurikenGroup = __webpack_require__(36);
 	
@@ -790,9 +744,7 @@
 	        }
 	    }, {
 	        key: "render",
-	        value: function render() {
-	            this.game.debug.body(this.ninja);
-	        }
+	        value: function render() {}
 	    }, {
 	        key: "onGameOver",
 	        value: function onGameOver() {
@@ -806,7 +758,7 @@
 	exports.InGame = InGame;
 
 /***/ },
-/* 35 */
+/* 34 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -901,6 +853,49 @@
 	})(Phaser.Sprite);
 	
 	exports.Ninja = Ninja;
+
+/***/ },
+/* 35 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	var _get = __webpack_require__(2)["default"];
+	
+	var _inherits = __webpack_require__(16)["default"];
+	
+	var _createClass = __webpack_require__(29)["default"];
+	
+	var _classCallCheck = __webpack_require__(27)["default"];
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var Ground = (function (_Phaser$Sprite) {
+	    _inherits(Ground, _Phaser$Sprite);
+	
+	    function Ground(game, x, y, key) {
+	        _classCallCheck(this, Ground);
+	
+	        _get(Object.getPrototypeOf(Ground.prototype), "constructor", this).call(this, game, x, y, key);
+	
+	        this.initPhysics();
+	    }
+	
+	    _createClass(Ground, [{
+	        key: "initPhysics",
+	        value: function initPhysics() {
+	            this.game.physics.arcade.enableBody(this);
+	            this.body.collideWorldBounds = true;
+	            this.body.immovable = true;
+	        }
+	    }]);
+	
+	    return Ground;
+	})(Phaser.Sprite);
+	
+	exports.Ground = Ground;
 
 /***/ },
 /* 36 */
@@ -1026,13 +1021,7 @@
 	exports.Shuriken = Shuriken;
 
 /***/ },
-/* 38 */,
-/* 39 */,
-/* 40 */,
-/* 41 */,
-/* 42 */,
-/* 43 */,
-/* 44 */
+/* 38 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
